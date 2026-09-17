@@ -110,11 +110,10 @@ export default function SurveyForm() {
         Array.isArray(value) ? value.length > 0 : value !== undefined && value !== null && value !== ''
       )
 
-      const { data: submission, error: submissionError } = await supabase
-        .from('submissions')
-        .insert({})
-        .select('id')
-        .single()
+      // Generated client-side (rather than read back with .select()) because anon can only
+      // insert into submissions, not select from it — RLS would reject a RETURNING read.
+      const submissionId = crypto.randomUUID()
+      const { error: submissionError } = await supabase.from('submissions').insert({ id: submissionId })
 
       if (submissionError) {
         setSubmitState('error')
@@ -124,15 +123,13 @@ export default function SurveyForm() {
       const responseRows = answeredEntries
         .filter(([name]) => questionIdByName.has(name))
         .map(([name, value]) => ({
-          submission_id: submission.id,
+          submission_id: submissionId,
           question_id: questionIdByName.get(name),
           response: value,
         }))
 
       const { error: responsesError } = await supabase.from('responses').insert(responseRows)
       if (responsesError) {
-        // Roll back the now-orphaned submission row so a retry doesn't pile up empty submissions.
-        await supabase.from('submissions').delete().eq('id', submission.id)
         setSubmitState('error')
         return
       }
