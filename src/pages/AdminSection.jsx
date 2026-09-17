@@ -67,10 +67,14 @@ export default function AdminSection({ responses, loading, error }) {
         {fields.checkboxFields.map((field) => (
           <CheckboxCard key={field.name} field={field} responses={responses} />
         ))}
-        {fields.commentFields.map((field) => (
-          <CommentsCard key={field.name} field={field} responses={responses} />
-        ))}
       </div>
+      {fields.commentFields.length > 0 && (
+        <div className="mt-4 grid grid-cols-1 gap-4">
+          {fields.commentFields.map((field) => (
+            <CommentsCard key={field.name} field={field} responses={responses} />
+          ))}
+        </div>
+      )}
     </div>
   )
 }

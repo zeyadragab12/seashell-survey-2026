@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Area, AreaChart, ResponsiveContainer, Tooltip, YAxis } from 'recharts'
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { Gauge, MessageSquareText, TrendingUp, Users } from 'lucide-react'
 
 function StatCard({ icon: Icon, label, value, sub, accent }) {
@@ -81,6 +81,7 @@ export default function SummaryHeader({ responses, overallAverage, commentCount 
                   <stop offset="100%" stopColor="#4A154B" stopOpacity={0} />
                 </linearGradient>
               </defs>
+              <XAxis dataKey="day" hide />
               <YAxis hide domain={['dataMin', 'dataMax']} />
               <Tooltip
                 cursor={false}

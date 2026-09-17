@@ -1,7 +1,7 @@
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { ratingDistribution } from '../../lib/analysis'
 
-const COLOR_BY_OPTION = {
+export const COLOR_BY_OPTION = {
   Excellent: '#1E8E5A',
   Good: '#4A154B',
   Fair: '#B08A45',
