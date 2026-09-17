@@ -26,19 +26,40 @@ export function useAdminResponses() {
 
   useEffect(() => {
     let ignore = false
-    supabase
-      .from('submission_answers')
-      .select('submission_id, created_at, question_name, response')
-      .then(({ data, error: fetchError }) => {
+
+    async function fetchAll() {
+      if (!supabase) {
+        throw new Error('Survey storage is not configured.')
+      }
+
+      const pageSize = 1000
+      const rows = []
+      for (let from = 0; ; from += pageSize) {
+        const { data, error: fetchError } = await supabase
+          .from('submission_answers')
+          .select('submission_id, created_at, question_name, response')
+          .range(from, from + pageSize - 1)
+
+        if (fetchError) throw fetchError
+        rows.push(...data)
+        if (data.length < pageSize) break
+      }
+      return rows
+    }
+
+    fetchAll()
+      .then((data) => {
         if (ignore) return
-        if (fetchError) {
-          setError(fetchError.message)
-        } else {
-          setError('')
-          setResponses(groupSubmissionAnswers(data))
-        }
+        setError('')
+        setResponses(groupSubmissionAnswers(data))
         setLoading(false)
       })
+      .catch((fetchError) => {
+        if (ignore) return
+        setError(fetchError.message)
+        setLoading(false)
+      })
+
     return () => {
       ignore = true
     }

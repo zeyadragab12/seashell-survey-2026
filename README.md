@@ -63,6 +63,32 @@ Until these are set, the app still runs and can be filled out, but submission
 shows an inline "storage is not configured" message instead of silently
 failing.
 
+## Admin login (email/password + Google)
+
+Admins can sign in with either a Supabase email/password user or Google.
+Either way, only emails in the `admin_emails` table can see results — anyone
+else's session is immediately rejected by Row Level Security and shown a
+"Not authorized" screen.
+
+1. Run [`supabase/migrations/0003_admin_google_login.sql`](supabase/migrations/0003_admin_google_login.sql)
+   in the SQL editor. It creates `admin_emails`, tightens the `submissions`/
+   `responses` read policies to require allowlist membership, and seeds
+   `amr.fayez@thegdevelopments.com` and `zeyad.ragab@thegdevelopments.com`.
+   To add or remove an admin later, edit the `admin_emails` table directly.
+2. In the Supabase dashboard: **Authentication → Providers → Google**, turn
+   it on, and fill in a Google OAuth **Client ID** and **Client secret**.
+3. In [Google Cloud Console](https://console.cloud.google.com/apis/credentials),
+   create an OAuth 2.0 Client ID (type: Web application) and add the
+   **Authorized redirect URI** shown on the Supabase Google provider page
+   (`https://<your-project>.supabase.co/auth/v1/callback`).
+4. In Supabase **Authentication → URL Configuration**, add your app's admin
+   URL (e.g. `http://localhost:5173/admin` for local dev, plus your
+   production URL) to **Redirect URLs**.
+
+To create an email/password admin instead of (or alongside) Google, add the
+user under **Authentication → Users** in Supabase and make sure their email
+is also in `admin_emails`.
+
 ## Project structure
 
 - `src/data/surveyConfig.js` — the 6 sections and 24 questions (ratings,

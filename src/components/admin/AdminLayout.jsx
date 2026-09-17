@@ -3,6 +3,10 @@ import { LogOut, RefreshCw } from 'lucide-react'
 import { sections } from '../../data/surveyConfig'
 import { supabase } from '../../lib/supabase'
 
+function handleSignOut() {
+  supabase?.auth.signOut().catch(() => {})
+}
+
 function navLinkClass({ isActive }) {
   return `whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
     isActive
@@ -41,7 +45,7 @@ export default function AdminLayout({ loading, onRefresh }) {
             </button>
             <button
               type="button"
-              onClick={() => supabase.auth.signOut()}
+              onClick={handleSignOut}
               className="inline-flex items-center justify-center gap-1.5 rounded-full bg-[#4A154B] px-4 py-2 text-sm font-medium text-white shadow-[0_4px_14px_-4px_rgba(74,21,75,0.55)] transition-colors hover:bg-[#370E38]"
             >
               <LogOut size={14} aria-hidden="true" />

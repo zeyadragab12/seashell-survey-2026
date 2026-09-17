@@ -1,5 +1,5 @@
 import { Route, Routes } from 'react-router-dom'
-import { useSession } from '../lib/useSession'
+import { useAdminAccess } from '../lib/useAdminAccess'
 import { supabase } from '../lib/supabase'
 import { useAdminResponses } from '../lib/useAdminResponses'
 import AdminLogin from './AdminLogin'
@@ -23,7 +23,7 @@ function AdminRoutes() {
 }
 
 export default function Admin() {
-  const session = useSession()
+  const { status, email } = useAdminAccess()
 
   if (!supabase) {
     return (
@@ -33,11 +33,15 @@ export default function Admin() {
     )
   }
 
-  if (session === undefined) {
+  if (status === 'checking') {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#FAF8F6] text-sm text-[#9A8A9C]">Loading…</div>
     )
   }
 
-  return session ? <AdminRoutes /> : <AdminLogin />
+  if (status === 'authorized') {
+    return <AdminRoutes />
+  }
+
+  return <AdminLogin unauthorized={status === 'unauthorized'} unauthorizedEmail={email} />
 }

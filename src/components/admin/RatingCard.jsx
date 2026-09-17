@@ -10,7 +10,7 @@ const COLOR_BY_OPTION = {
 }
 
 export default function RatingCard({ field, responses }) {
-  const { distribution, average, responded } = ratingDistribution(responses, field)
+  const { distribution, average, scoreCount, naCount } = ratingDistribution(responses, field)
 
   return (
     <div className="rounded-2xl border border-[#EADFE0] bg-white p-4 shadow-[0_1px_2px_rgba(74,21,75,0.04)]">
@@ -22,7 +22,10 @@ export default function RatingCard({ field, responses }) {
           </span>
         )}
       </div>
-      <p className="mb-3 text-xs text-[#9A8A9C]">{responded} response{responded === 1 ? '' : 's'}</p>
+      <p className="mb-3 text-xs text-[#9A8A9C]">
+        {scoreCount} rated response{scoreCount === 1 ? '' : 's'}
+        {naCount > 0 ? ` · ${naCount} N/A` : ''}
+      </p>
       <ResponsiveContainer width="100%" height={160}>
         <BarChart data={distribution} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1E9EA" />

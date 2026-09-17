@@ -95,47 +95,53 @@ export default function SurveyForm() {
       return
     }
 
-    const { data: questions, error: questionsError } = await supabase
-      .from('questions')
-      .select('id, name')
+    try {
+      const { data: questions, error: questionsError } = await supabase
+        .from('questions')
+        .select('id, name')
 
-    if (questionsError) {
+      if (questionsError) {
+        setSubmitState('error')
+        return
+      }
+
+      const questionIdByName = new Map(questions.map((q) => [q.name, q.id]))
+      const answeredEntries = Object.entries(answers).filter(([, value]) =>
+        Array.isArray(value) ? value.length > 0 : value !== undefined && value !== null && value !== ''
+      )
+
+      const { data: submission, error: submissionError } = await supabase
+        .from('submissions')
+        .insert({})
+        .select('id')
+        .single()
+
+      if (submissionError) {
+        setSubmitState('error')
+        return
+      }
+
+      const responseRows = answeredEntries
+        .filter(([name]) => questionIdByName.has(name))
+        .map(([name, value]) => ({
+          submission_id: submission.id,
+          question_id: questionIdByName.get(name),
+          response: value,
+        }))
+
+      const { error: responsesError } = await supabase.from('responses').insert(responseRows)
+      if (responsesError) {
+        // Roll back the now-orphaned submission row so a retry doesn't pile up empty submissions.
+        await supabase.from('submissions').delete().eq('id', submission.id)
+        setSubmitState('error')
+        return
+      }
+
+      setSubmitState('idle')
+      goToStep(TOTAL_STEPS + 1)
+    } catch {
       setSubmitState('error')
-      return
     }
-
-    const questionIdByName = new Map(questions.map((q) => [q.name, q.id]))
-    const answeredEntries = Object.entries(answers).filter(([, value]) =>
-      Array.isArray(value) ? value.length > 0 : value !== undefined && value !== null && value !== ''
-    )
-
-    const { data: submission, error: submissionError } = await supabase
-      .from('submissions')
-      .insert({})
-      .select('id')
-      .single()
-
-    if (submissionError) {
-      setSubmitState('error')
-      return
-    }
-
-    const responseRows = answeredEntries
-      .filter(([name]) => questionIdByName.has(name))
-      .map(([name, value]) => ({
-        submission_id: submission.id,
-        question_id: questionIdByName.get(name),
-        response: value,
-      }))
-
-    const { error: responsesError } = await supabase.from('responses').insert(responseRows)
-    if (responsesError) {
-      setSubmitState('error')
-      return
-    }
-
-    setSubmitState('idle')
-    goToStep(TOTAL_STEPS + 1)
   }
 
   const handleRestart = () => {

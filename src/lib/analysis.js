@@ -51,6 +51,8 @@ export function ratingDistribution(responses, field) {
   return {
     distribution: options.map((option) => ({ option, count: counts[option] })),
     average: scoreCount ? scoreSum / scoreCount : null,
+    scoreCount,
+    naCount: counts['N/A'] ?? 0,
     responded: scoreCount + (counts['N/A'] ?? 0),
   }
 }
