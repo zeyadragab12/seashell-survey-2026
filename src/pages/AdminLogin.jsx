@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { AlertTriangle, LockKeyhole, Waves } from 'lucide-react'
+import { AlertTriangle, LockKeyhole } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
 function GoogleIcon(props) {
@@ -83,8 +83,8 @@ export default function AdminLogin({ unauthorized = false, unauthorizedEmail = '
         className="w-full max-w-sm rounded-3xl border border-[#EADFE0] bg-white p-8 shadow-[0_20px_48px_-20px_rgba(74,21,75,0.25)]"
       >
         <div className="mb-7 flex flex-col items-center gap-3 text-center">
-          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#4A154B] to-[#7A2E7C] text-[#E9C46A] shadow-[0_8px_20px_-6px_rgba(74,21,75,0.55)]">
-            <Waves size={24} aria-hidden="true" />
+          <span className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl shadow-[0_8px_20px_-6px_rgba(74,21,75,0.55)]">
+            <img src="/img/logo/beach-emblem.jpg" alt="Seashell" className="h-full w-full object-cover" />
           </span>
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#B08A45]">
